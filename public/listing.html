@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listing Page</title>
+</head>
+<body>
+  <h1>Listing Page</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date of Birth</th>
+        <th>Country</th>
+        <th>Resume</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="submissionsTableBody"></tbody>
+  </table>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Fetch and display the list of submissions
+      $.get('/api/submissions', function(submissions) {
+        const tableBody = $('#submissionsTableBody');
+
+        submissions.forEach(function(submission) {
+          const row = $('<tr></tr>');
+
+          const nameCell = $('<td></td>').text(submission.name);
+          row.append(nameCell);
+
+          const dobCell = $('<td></td>').text(submission.dob);
+          row.append(dobCell);
+
+          const countryCell = $('<td></td>').text(submission.country);
+          row.append(countryCell);
+
+          const resumeCell = $('<td></td>');
+          const resumeLink = $('<a></a>')
+            .text('View')
+            .attr('href', submission.resume)
+            .attr('target', '_blank');
+          resumeCell.append(resumeLink);
+          row.append(resumeCell);
+
+          const actionsCell = $('<td></td>');
+          const deleteButton = $('<button></button>')
+            .text('Delete')
+            .click(function() {
+              $.ajax({
+                type: 'DELETE',
+                url:'/api/submissions/' + submission.id,
+                success: function() {
+                  row.remove();
+                },
+                error: function() {
+                  alert('An error occurred');
+                },
+              });
+            });
+          actionsCell.append(deleteButton);
+          row.append(actionsCell);
+
+          tableBody.append(row);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

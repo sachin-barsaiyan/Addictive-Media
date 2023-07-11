@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input Page</title>
+  </head>
+  <body>
+    <h1>Input Page</h1>
+    <form id="submissionForm" enctype="multipart/form-data">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required /><br /><br />
+
+      <label for="dob">Date of Birth:</label>
+      <input type="date" id="dob" name="dob" required /><br /><br />
+
+      <label for="country">Country:</label>
+      <input type="text" id="country" name="country" required /><br /><br />
+
+      <label for="resume">Resume:</label>
+      <input type="file" id="resume" name="resume" required /><br /><br />
+
+      <input type="submit" value="Submit" />
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Fetch the list of countries for the autocomplete field
+        $.get("/api/countries", function (countries) {
+          $("#country").autocomplete({
+            source: countries,
+          });
+        });
+
+        // Submit the form using AJAX
+        $("#submissionForm").submit(function (event) {
+          event.preventDefault();
+
+          const form = $(this)[0];
+          const formData = new FormData(form);
+
+          $.ajax({
+            type: "POST",
+            url: "/api/submit",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+              alert("Form submitted successfully");
+              form.reset();
+            },
+            error: function () {
+              alert("An error occurred");
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
